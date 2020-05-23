@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:flutterappvictory02/physical.dart';
 
 
 void main() => runApp(MyApp());
@@ -31,10 +32,20 @@ class RandomWordsState extends State<RandomWords> {
             IconButton(
               icon: Icon(Icons.list),
               onPressed: _pushSaved,
+            ),
+            IconButton(
+              icon: Icon(Icons.motorcycle),
+              onPressed: _pushPhysics,
             )
           ]
     ),
       body: _buildSuggestions(),
+    );
+  }
+
+  void _pushPhysics() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => PhysicalStatelessWidget())
     );
   }
 
