@@ -80,32 +80,45 @@ class _DraggableCardState extends State<DraggableCard>
   Animation<Alignment> _animation;
   Size size;
 
+  Alignment _align(Offset position) {
+
+    var x = 2 * position.dx / size.width - 1.0;
+    var y = 2 * position.dy / size.height - 1.0;
+
+    if (x > 1.0) {
+      x = 1.0;
+    } else if (x < -1.0) {
+      x = -1.0;
+    }
+
+    if (y > 1.0) {
+      y = 1.0;
+    } else if (y < -1.0) {
+      y = -1.0;
+    }
+
+    var alignment = Alignment(x, y);
+    print('---------------------------------');
+    print('local....: ${position.dx} x ${position.dy}');
+    print('size.....: ${size.width} x ${size.height}');
+    print('align....: $alignment');
+
+    return alignment;
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return new GestureDetector(
       onPanDown: (details) {
-        var a = Alignment(
-            2 * details.localPosition.dx / size.width - 1.0,
-            2 * details.localPosition.dy / size.height - 1.0,
-        );
-        print('---------------------------------');
-        print('local....: ${details.localPosition.dx} x ${details.localPosition.dy}');
-        // print('global...: ${details.globalPosition}');
-        print('size.....: ${size.width} x ${size.height}');
-        // print('math.....: ${size.width - details.localPosition.dx}');
-        print('a........: $a');
-
         _introAnimation(
-          a,
+          _align(details.localPosition),
         );
 
       },
       onPanUpdate: (details) {
         setState(() {
-          _dragAlignment += Alignment(
-            details.delta.dx / (size.width / 2),
-            details.delta.dy / (size.height / 2),
-          );
+          _dragAlignment = _align(details.localPosition);
         });
       },
       onPanEnd: (details) {
