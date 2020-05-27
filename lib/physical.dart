@@ -7,11 +7,57 @@ class PhysicalStatelessWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: DraggableCard(
-        child: FlutterLogo(
-          size: 123,
+      body: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              TextWrapper(
+                child: Text('Top Left'),
+              ),
+              TextWrapper(
+                child: Text('Top Right'),
+              ),
+            ],
+          ),
+          DraggableCard(
+            child: FlutterLogo(
+              size: 123,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              TextWrapper(
+                child: Text('Bottom Left'),
+              ),
+              TextWrapper(
+                child: Text('Bottom Right'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TextWrapper extends StatelessWidget {
+  final Widget child;
+
+  TextWrapper({this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.yellow,
         ),
       ),
+      child: this.child,
     );
   }
 }
@@ -27,45 +73,92 @@ class DraggableCard extends StatefulWidget {
   }
 }
 
-class _DraggableCardState extends State<DraggableCard> with SingleTickerProviderStateMixin {
-
+class _DraggableCardState extends State<DraggableCard>
+    with SingleTickerProviderStateMixin {
   AnimationController _animationController;
   Alignment _dragAlignment = Alignment.center;
   Animation<Alignment> _animation;
+  Size size;
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-
     return new GestureDetector(
-        onPanDown: (details) {},
-        onPanUpdate: (details) {
-          setState(() {
-            _dragAlignment += Alignment(
-              details.delta.dx / (size.width / 2),
-              details.delta.dy / (size.height / 2),
+      onPanDown: (details) {
+        var a = Alignment(
+            2 * details.localPosition.dx / size.width - 1.0,
+            2 * details.localPosition.dy / size.height - 1.0,
+        );
+        print('---------------------------------');
+        print('local....: ${details.localPosition.dx} x ${details.localPosition.dy}');
+        // print('global...: ${details.globalPosition}');
+        print('size.....: ${size.width} x ${size.height}');
+        // print('math.....: ${size.width - details.localPosition.dx}');
+        print('a........: $a');
+
+        _introAnimation(
+          a,
+        );
+
+      },
+      onPanUpdate: (details) {
+        setState(() {
+          _dragAlignment += Alignment(
+            details.delta.dx / (size.width / 2),
+            details.delta.dy / (size.height / 2),
+          );
+        });
+      },
+      onPanEnd: (details) {
+        _runAnimation(details.velocity.pixelsPerSecond, size);
+      },
+      child: Container(
+        height: 450,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            size = Size(constraints.maxWidth, constraints.maxHeight);
+
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.orange,
+                ),
+              ),
+              child: Align(
+                alignment: _dragAlignment,
+                child: Card(
+                  child: widget.child,
+                ),
+              ),
             );
-          });
-        },
-        onPanEnd: (details) {
-          _runAnimation(details.velocity.pixelsPerSecond, size);
-        },
-        child: Align(
-            alignment: _dragAlignment,
-            child: Card(
-              child: widget.child,
-            )
-        )
+          },
+        ),
+      ),
     );
   }
 
-  void _runAnimation(Offset pixelsPerSecond, Size size) {
-    _animation = _animationController.drive(
-      AlignmentTween(
-        begin: _dragAlignment,
-        end: Alignment.center,
-      )
+  void _introAnimation(Alignment end) {
+    _animation = _animationController.drive(AlignmentTween(
+      begin: Alignment.center,
+      end: end,
+    ));
+    _animationController.reset();
+    _animationController.forward();
+
+    const spring = SpringDescription(
+      mass: 30,
+      stiffness: 1,
+      damping: 1,
     );
+
+    final simulation = SpringSimulation(spring, 0, 1, 1);
+    _animationController.animateWith(simulation);
+  }
+
+  void _runAnimation(Offset pixelsPerSecond, Size size) {
+    _animation = _animationController.drive(AlignmentTween(
+      begin: _dragAlignment,
+      end: Alignment.center,
+    ));
     _animationController.reset();
     _animationController.forward();
 
@@ -89,9 +182,8 @@ class _DraggableCardState extends State<DraggableCard> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-        vsync: this,
-        duration: Duration(seconds: 1));
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
 
     _animationController.addListener(() {
       setState(() {
