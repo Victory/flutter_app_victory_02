@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutterappvictory02/physical.dart';
-
+import 'package:flutterappvictory02/qanda.dart';
 
 void main() => runApp(MyApp());
 
@@ -37,9 +37,19 @@ class RandomWordsState extends State<RandomWords> {
               icon: Icon(Icons.motorcycle),
               onPressed: _pushPhysics,
             ),
+            IconButton(
+              icon: Icon(Icons.whatshot),
+              onPressed: _pushQuestionAndAnswers,
+            ),
           ]
     ),
       body: _buildSuggestions(),
+    );
+  }
+
+  void _pushQuestionAndAnswers() {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => QuestionAndAnswerWidget())
     );
   }
 
@@ -114,7 +124,6 @@ class RandomWordsState extends State<RandomWords> {
       },
     );
   }
-
 }
 
 class RandomWords extends StatefulWidget {
