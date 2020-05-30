@@ -36,7 +36,7 @@ class RandomWordsState extends State<RandomWords> {
             IconButton(
               icon: Icon(Icons.motorcycle),
               onPressed: _pushPhysics,
-            )
+            ),
           ]
     ),
       body: _buildSuggestions(),

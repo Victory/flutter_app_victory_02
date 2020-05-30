@@ -1,40 +1,49 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:flutter/rendering.dart';
 
 class PhysicalStatelessWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              TextWrapper(
-                child: Text('Top Left'),
-              ),
-              TextWrapper(
-                child: Text('Top Right'),
-              ),
-            ],
+      body: CustomScrollView(
+        slivers: <Widget>[
+          const SliverAppBar(
+            pinned: true,
+            expandedHeight: 250,
+            title: Text('Intellectual dark wave romance novel'),
           ),
-          DraggableCard(
-            child: FlutterLogo(
-              size: 123,
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              TextWrapper(
-                child: Text('Bottom Left'),
+          SliverList(
+            delegate: SliverChildListDelegate(<Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  TextWrapper(
+                    child: Text('Top Left'),
+                  ),
+                  TextWrapper(
+                    child: Text('Top Right'),
+                  ),
+                ],
               ),
-              TextWrapper(
-                child: Text('Bottom Right'),
+              DraggableCard(
+                child: FlutterLogo(
+                  size: 123,
+                ),
               ),
-            ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  TextWrapper(
+                    child: Text('Bottom Left'),
+                  ),
+                  TextWrapper(
+                    child: Text('Bottom Right'),
+                  ),
+                ],
+              ),
+            ]),
           ),
         ],
       ),
@@ -80,8 +89,48 @@ class _DraggableCardState extends State<DraggableCard>
   Animation<Alignment> _animation;
   Size size;
 
-  Alignment _align(Offset position) {
+  @override
+  Widget build(BuildContext context) {
+    return new GestureDetector(
+      onPanDown: (details) {
+        _introAnimation(
+          _align(details.localPosition),
+        );
+      },
+      onPanUpdate: (details) {
+        setState(() {
+          _dragAlignment = _align(details.localPosition);
+        });
+      },
+      onPanEnd: (details) {
+        _runAnimation(details.velocity.pixelsPerSecond, size);
+      },
+      child: Container(
+        height: 250,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            size = Size(constraints.maxWidth, constraints.maxHeight);
 
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.orange,
+                ),
+              ),
+              child: Align(
+                alignment: _dragAlignment,
+                child: Card(
+                  child: widget.child,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Alignment _align(Offset position) {
     var x = 2 * position.dx / size.width - 1.0;
     var y = 2 * position.dy / size.height - 1.0;
 
@@ -104,49 +153,6 @@ class _DraggableCardState extends State<DraggableCard>
     print('align....: $alignment');
 
     return alignment;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return new GestureDetector(
-      onPanDown: (details) {
-        _introAnimation(
-          _align(details.localPosition),
-        );
-
-      },
-      onPanUpdate: (details) {
-        setState(() {
-          _dragAlignment = _align(details.localPosition);
-        });
-      },
-      onPanEnd: (details) {
-        _runAnimation(details.velocity.pixelsPerSecond, size);
-      },
-      child: Container(
-        height: 450,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            size = Size(constraints.maxWidth, constraints.maxHeight);
-
-            return Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.orange,
-                ),
-              ),
-              child: Align(
-                alignment: _dragAlignment,
-                child: Card(
-                  child: widget.child,
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
   }
 
   void _introAnimation(Alignment end) {
