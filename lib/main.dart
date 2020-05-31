@@ -14,6 +14,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.yellow,
       ),
+      routes: {
+        QuestionAndAnswerWidget.routeName: (context) => QuestionAndAnswerWidget.fromContext(context),
+      },
     );
   }
 }
@@ -26,66 +29,52 @@ class RandomWordsState extends State<RandomWords> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text('Startup the Name Generator'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.list),
-              onPressed: _pushSaved,
-            ),
-            IconButton(
-              icon: Icon(Icons.motorcycle),
-              onPressed: _pushPhysics,
-            ),
-            IconButton(
-              icon: Icon(Icons.whatshot),
-              onPressed: _pushQuestionAndAnswers,
-            ),
-          ]
-    ),
+      appBar:
+          AppBar(title: Text('Startup the Name Generator'), actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.list),
+          onPressed: _pushSaved,
+        ),
+        IconButton(
+          icon: Icon(Icons.motorcycle),
+          onPressed: _pushPhysics,
+        ),
+        IconButton(
+          icon: Icon(Icons.whatshot),
+          onPressed: () =>  QuestionAndAnswerWidget.navigateTo(context),
+        ),
+      ]),
       body: _buildSuggestions(),
-    );
-  }
-
-  void _pushQuestionAndAnswers() {
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => QuestionAndAnswerWidget())
     );
   }
 
   void _pushPhysics() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => PhysicalStatelessWidget())
+      MaterialPageRoute(builder: (context) => PhysicalStatelessWidget()),
     );
   }
 
   void _pushSaved() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          final Iterable<ListTile> tiles = _saved.map(
-                  (WordPair pair) {
-                return ListTile(
-                  title: Text(pair.asPascalCase, style: _biggerFont),
-                );
-              }
-          );
-          final List<Widget> divided = ListTile
-            .divideTiles(context: context, tiles: tiles)
-            .toList();
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      final Iterable<ListTile> tiles = _saved.map((WordPair pair) {
+        return ListTile(
+          title: Text(pair.asPascalCase, style: _biggerFont),
+        );
+      });
+      final List<Widget> divided =
+          ListTile.divideTiles(context: context, tiles: tiles).toList();
 
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Liked Suggestions'),
-            ),
-            body: ListView(children: divided),
-          );
-        }
-      )
-    );
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Liked Suggestions'),
+        ),
+        body: ListView(children: divided),
+      );
+    }));
   }
 
-  Widget _buildSuggestions  () {
+  Widget _buildSuggestions() {
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
       itemBuilder: (context, ii) {
@@ -127,7 +116,6 @@ class RandomWordsState extends State<RandomWords> {
 }
 
 class RandomWords extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     return new RandomWordsState();
