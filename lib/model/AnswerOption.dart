@@ -5,4 +5,9 @@ class AnswerOption {
   final String label;
 
   AnswerOption({this.label});
+
+  @override
+  String toString() {
+    return 'AnswerOption: $label';
+  }
 }

@@ -1,39 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutterappvictory02/model/AnswerOption.dart';
+import 'package:flutterappvictory02/routes/SpinnerRoute.dart';
 
-import 'model/MockDb.dart';
-import 'model/Question.dart';
+import '../model/MockDb.dart';
+import '../model/Question.dart';
 
-class QuestionAndAnswerWidget extends StatefulWidget {
+class QuestionAndAnswerRoute extends StatefulWidget {
   static const routeName = '/qanda';
 
   final Question _q;
 
-  QuestionAndAnswerWidget(this._q);
+  QuestionAndAnswerRoute(this._q);
 
   static fromContext(BuildContext context) {
     Question q = ModalRoute.of(context).settings.arguments;
-    return QuestionAndAnswerWidget(q);
+    return QuestionAndAnswerRoute(q);
   }
 
-  static navigateTo(BuildContext context) {
-    Db().getAllQuestions().then((questions) {
-      Navigator.of(context).pushNamed(QuestionAndAnswerWidget.routeName, arguments: questions[0]);
+  static navigateTo(BuildContext context, {index = 0}) {
+    SpinnerRoute.navigateTo(context, () {
+      db.getAllQuestions().then((questions) {
+        Navigator.of(context).pushReplacementNamed(
+          QuestionAndAnswerRoute.routeName,
+          arguments: questions[index],
+        );
+      });
     });
   }
 
   @override
   State<StatefulWidget> createState() {
-    return new QuestionState(_q);
+    return new _QuestionState(_q);
   }
 }
 
-class QuestionState extends State<QuestionAndAnswerWidget> {
-  final Question _q;
+class _QuestionState extends State<QuestionAndAnswerRoute> {
+  Question _q;
 
-  AnswerOption _sofias_anwser;
+  AnswerOption _sofiasAnwser;
 
-  QuestionState(this._q);
+  _QuestionState(this._q);
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +50,10 @@ class QuestionState extends State<QuestionAndAnswerWidget> {
           child: Text(ans.label),
         ),
         value: ans,
-        groupValue: _sofias_anwser,
+        groupValue: _sofiasAnwser,
         onChanged: (opt) {
           setState(() {
-            _sofias_anwser = opt;
+            _sofiasAnwser = opt;
           });
         },
       );
@@ -64,6 +70,7 @@ class QuestionState extends State<QuestionAndAnswerWidget> {
               delegate: SliverChildListDelegate.fixed(
                 [
                   Container(
+                    key: ObjectKey(_q),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
@@ -73,21 +80,18 @@ class QuestionState extends State<QuestionAndAnswerWidget> {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate.fixed(answerWidgets),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate.fixed(
-                [
+                  ...answerWidgets,
                   ButtonBar(
                     children: [
                       RaisedButton(
                         child: Text('save'),
                         onPressed: () {
-                          print('Saving!');
+                          print(_sofiasAnwser);
+                          db.getAllQuestions().then((questions) {
+                            setState(() {
+                              _q = questions[1];
+                            });
+                          });
                         },
                       )
                     ],

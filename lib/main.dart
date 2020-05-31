@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutterappvictory02/physical.dart';
-import 'package:flutterappvictory02/qanda.dart';
+import 'package:flutterappvictory02/routes/QuestionAndAnswerRoute.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.yellow,
       ),
       routes: {
-        QuestionAndAnswerWidget.routeName: (context) => QuestionAndAnswerWidget.fromContext(context),
+        QuestionAndAnswerRoute.routeName: (context) => QuestionAndAnswerRoute.fromContext(context),
       },
     );
   }
@@ -41,7 +41,7 @@ class RandomWordsState extends State<RandomWords> {
         ),
         IconButton(
           icon: Icon(Icons.whatshot),
-          onPressed: () =>  QuestionAndAnswerWidget.navigateTo(context),
+          onPressed: () =>  QuestionAndAnswerRoute.navigateTo(context),
         ),
       ]),
       body: _buildSuggestions(),
