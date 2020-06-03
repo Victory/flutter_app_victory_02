@@ -1,10 +1,12 @@
+import 'package:uuid/uuid.dart';
+
 import 'AnswerOption.dart';
 
 class Question {
-  final questionId = 11;
-  final String question;
+  final questionKey = Uuid().v4();
+  final String label;
   final List<AnswerOption> possibleAnswers;
   final questionVersion = 1.0;
 
-  Question({this.question, this.possibleAnswers});
+  Question({this.label, this.possibleAnswers});
 }

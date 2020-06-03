@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterappvictory02/model/AnswerOption.dart';
+import 'package:flutterappvictory02/model/Answered.dart';
 import 'package:flutterappvictory02/routes/SpinnerRoute.dart';
 
 import '../model/MockDb.dart';
@@ -37,6 +38,8 @@ class QuestionAndAnswerRoute extends StatefulWidget {
 class _QuestionState extends State<QuestionAndAnswerRoute> {
   Question _q;
 
+  bool _isSaveEnabled = false;
+
   AnswerOption _sofiasAnwser;
 
   _QuestionState(this._q);
@@ -53,6 +56,7 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
         groupValue: _sofiasAnwser,
         onChanged: (opt) {
           setState(() {
+            _isSaveEnabled = true;
             _sofiasAnwser = opt;
           });
         },
@@ -74,7 +78,7 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        _q.question,
+                        _q.label,
                         textScaleFactor: 1.8,
                         textAlign: TextAlign.center,
                       ),
@@ -85,8 +89,15 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
                     children: [
                       RaisedButton(
                         child: Text('save'),
-                        onPressed: () {
-                          print(_sofiasAnwser);
+                        onPressed: (!_isSaveEnabled) ? null : () {
+                          _isSaveEnabled = false;
+                          db.saveAnswer(Answered(
+                            answerOptionKey: _sofiasAnwser.answerOptionKey,
+                            answerLabel: _sofiasAnwser.label,
+                            questionKey: _q.questionKey,
+                            questionLabel: _q.label,
+                          ));
+
                           db.getAllQuestions().then((questions) {
                             setState(() {
                               _q = questions[1];
