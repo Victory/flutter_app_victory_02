@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutterappvictory02/physical.dart';
+import 'package:flutterappvictory02/routes/AnswerReviewRoute.dart';
 import 'package:flutterappvictory02/routes/QuestionAndAnswerRoute.dart';
 
 void main() => runApp(MyApp());
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         QuestionAndAnswerRoute.routeName: (context) => QuestionAndAnswerRoute.fromContext(context),
+        AnswerReviewRoute.routeName: (context) => AnswerReviewRoute.fromContext(context),
       },
     );
   }
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
 
 class RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
-  final _saved = Set<WordPair>();
+  final _saved = <WordPair>{};
   final _biggerFont = const TextStyle(fontSize: 18.2);
 
   @override
@@ -57,12 +59,12 @@ class RandomWordsState extends State<RandomWords> {
   void _pushSaved() {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      final Iterable<ListTile> tiles = _saved.map((WordPair pair) {
+      final tiles = _saved.map((WordPair pair) {
         return ListTile(
           title: Text(pair.asPascalCase, style: _biggerFont),
         );
       });
-      final List<Widget> divided =
+      final divided =
           ListTile.divideTiles(context: context, tiles: tiles).toList();
 
       return Scaffold(
@@ -118,6 +120,6 @@ class RandomWordsState extends State<RandomWords> {
 class RandomWords extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return new RandomWordsState();
+    return RandomWordsState();
   }
 }

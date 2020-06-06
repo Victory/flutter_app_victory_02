@@ -6,11 +6,11 @@ import 'AnswerOption.dart';
 import 'Question.dart';
 
 class _Db {
-  var _rnd = new Random();
+  final _rnd = Random();
 
-  var _answered = [];
+  final _answered = <Answered>[];
 
-  var _questions = [
+  final _questions = [
     Question(
         label: 'How were you doing when you were a girl in the village?',
         possibleAnswers: [
@@ -28,21 +28,37 @@ class _Db {
     )
   ];
 
-  getAllQuestions() {
+  /// Get all available answers
+  Future<List<Question>> getAllQuestions() {
     return Future.delayed(_getPromiseDuration(), () {
       return _questions;
     });
   }
 
-  saveAnswer(Answered a) {
+  /// Get the number of available questions
+  Future<int> getNumberOfQuestions() {
+    return Future.delayed(_getPromiseDuration(), () {
+      return _questions.length;
+    });
+  }
+
+  /// Save the given answer
+  Future<Null> saveAnswer(Answered a) {
     return Future.delayed(_getPromiseDuration(), () {
       _answered.add(a);
     });
   }
 
-  _getPromiseDuration() {
-    return Duration(milliseconds: _rnd.nextInt(3000));
+  /// get all answered questions
+  Future<List<Answered>> getAllAnswered() {
+    return Future.delayed(_getPromiseDuration(), () {
+      return _answered;
+    });
+  }
+
+  Duration _getPromiseDuration() {
+    return Duration(milliseconds: _rnd.nextInt(200));
   }
 }
 
-_Db db = new _Db();
+_Db db = _Db();

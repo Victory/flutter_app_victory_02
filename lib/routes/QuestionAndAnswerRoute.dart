@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterappvictory02/model/AnswerOption.dart';
 import 'package:flutterappvictory02/model/Answered.dart';
+import 'package:flutterappvictory02/routes/AnswerReviewRoute.dart';
 import 'package:flutterappvictory02/routes/SpinnerRoute.dart';
 
 import '../model/MockDb.dart';
@@ -9,21 +10,21 @@ import '../model/Question.dart';
 class QuestionAndAnswerRoute extends StatefulWidget {
   static const routeName = '/qanda';
 
-  final Question _q;
+  final List<Question> _questions;
 
-  QuestionAndAnswerRoute(this._q);
+  QuestionAndAnswerRoute(this._questions);
 
-  static fromContext(BuildContext context) {
-    Question q = ModalRoute.of(context).settings.arguments;
-    return QuestionAndAnswerRoute(q);
+  static QuestionAndAnswerRoute fromContext(BuildContext context) {
+    List<Question> questions = ModalRoute.of(context).settings.arguments;
+    return QuestionAndAnswerRoute(questions);
   }
 
-  static navigateTo(BuildContext context, {index = 0}) {
+  static void navigateTo(BuildContext context, {index = 0}) {
     SpinnerRoute.navigateTo(context, () {
       db.getAllQuestions().then((questions) {
         Navigator.of(context).pushReplacementNamed(
           QuestionAndAnswerRoute.routeName,
-          arguments: questions[index],
+          arguments: questions,
         );
       });
     });
@@ -31,22 +32,36 @@ class QuestionAndAnswerRoute extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return new _QuestionState(_q);
+    return _QuestionState(_questions);
   }
 }
 
 class _QuestionState extends State<QuestionAndAnswerRoute> {
-  Question _q;
+  final List<Question> _questions;
+
+  int _questionIndex;
 
   bool _isSaveEnabled = false;
 
+  final _allSaved = <Future>[];
+
   AnswerOption _sofiasAnwser;
 
-  _QuestionState(this._q);
+  _QuestionState(this._questions) {
+    _questionIndex = 0;
+  }
+
+  Question get _question {
+    return _questions[_questionIndex];
+  }
+
+  int get _numberOfQuestions {
+    return _questions.length;
+  }
 
   @override
   Widget build(BuildContext context) {
-    var answerWidgets = _q.possibleAnswers.map((ans) {
+    var answerWidgets = _question.possibleAnswers.map((ans) {
       return RadioListTile(
         title: Padding(
           padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
@@ -63,6 +78,31 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
       );
     }).toList();
 
+    Function onSave = () {
+      setState(() {
+        _isSaveEnabled = false;
+      });
+
+      var saved = db.saveAnswer(Answered(
+        answerOptionKey: _sofiasAnwser.answerOptionKey,
+        answerLabel: _sofiasAnwser.label,
+        questionKey: _question.questionKey,
+        questionLabel: _question.label,
+      ));
+      _allSaved.add(saved);
+
+      if (_numberOfQuestions <= _questionIndex + 1) {
+        SpinnerRoute.navigateTo(context, () async {
+          await Future.wait(_allSaved);
+          AnswerReviewRoute.navigateTo(context);
+        });
+      } else {
+        setState(() {
+          _questionIndex += 1;
+        });
+      }
+    };
+
     return SafeArea(
       child: Scaffold(
         body: CustomScrollView(
@@ -74,11 +114,11 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
               delegate: SliverChildListDelegate.fixed(
                 [
                   Container(
-                    key: ObjectKey(_q),
+                    key: ObjectKey(_question),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        _q.label,
+                        _question.label,
                         textScaleFactor: 1.8,
                         textAlign: TextAlign.center,
                       ),
@@ -88,22 +128,8 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
                   ButtonBar(
                     children: [
                       RaisedButton(
-                        child: Text('save'),
-                        onPressed: (!_isSaveEnabled) ? null : () {
-                          _isSaveEnabled = false;
-                          db.saveAnswer(Answered(
-                            answerOptionKey: _sofiasAnwser.answerOptionKey,
-                            answerLabel: _sofiasAnwser.label,
-                            questionKey: _q.questionKey,
-                            questionLabel: _q.label,
-                          ));
-
-                          db.getAllQuestions().then((questions) {
-                            setState(() {
-                              _q = questions[1];
-                            });
-                          });
-                        },
+                        child: Text('Save'),
+                        onPressed: (!_isSaveEnabled) ? null : onSave,
                       )
                     ],
                   ),

@@ -66,7 +66,7 @@ class TextWrapper extends StatelessWidget {
           color: Colors.yellow,
         ),
       ),
-      child: this.child,
+      child: child,
     );
   }
 }
@@ -91,7 +91,7 @@ class _DraggableCardState extends State<DraggableCard>
 
   @override
   Widget build(BuildContext context) {
-    return new GestureDetector(
+    return GestureDetector(
       onPanDown: (details) {
         _introAnimation(
           _align(details.localPosition),
