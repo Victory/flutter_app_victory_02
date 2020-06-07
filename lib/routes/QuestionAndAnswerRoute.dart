@@ -45,7 +45,7 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
 
   final _allSaved = <Future>[];
 
-  AnswerOption _sofiasAnwser;
+  AnswerOption _sofiasAnswer;
 
   _QuestionState(this._questions) {
     _questionIndex = 0;
@@ -68,11 +68,11 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
           child: Text(ans.label),
         ),
         value: ans,
-        groupValue: _sofiasAnwser,
+        groupValue: _sofiasAnswer,
         onChanged: (opt) {
           setState(() {
             _isSaveEnabled = true;
-            _sofiasAnwser = opt;
+            _sofiasAnswer = opt;
           });
         },
       );
@@ -84,8 +84,8 @@ class _QuestionState extends State<QuestionAndAnswerRoute> {
       });
 
       var saved = db.saveAnswer(Answered(
-        answerOptionKey: _sofiasAnwser.answerOptionKey,
-        answerLabel: _sofiasAnwser.label,
+        answerOptionKey: _sofiasAnswer.answerOptionKey,
+        answerLabel: _sofiasAnswer.label,
         questionKey: _question.questionKey,
         questionLabel: _question.label,
       ));

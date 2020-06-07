@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutterappvictory02/model/Answered.dart';
 import 'package:flutterappvictory02/model/MockDb.dart';
 
-import 'SpinnerRoute.dart';
-
 class AnswerReviewRoute extends StatefulWidget {
   static const routeName = '/answerreviewroute';
 
@@ -17,14 +15,12 @@ class AnswerReviewRoute extends StatefulWidget {
   }
 
   static void navigateTo(BuildContext context) {
-    SpinnerRoute.navigateTo(context, () {
       db.getAllAnswered().then((answered) {
         Navigator.of(context).pushReplacementNamed(
           AnswerReviewRoute.routeName,
           arguments: answered,
         );
       });
-    });
   }
 
   @override
