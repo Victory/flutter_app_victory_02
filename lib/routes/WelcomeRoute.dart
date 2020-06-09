@@ -52,6 +52,15 @@ class _WelcomeRouteState extends State<WelcomeRoute>
                 });
               },
             ),
+            IconButton(
+              icon: Icon(Icons.add_comment),
+              onPressed: () {
+                _notifyLoadingStatus(false);
+                setState(() {
+                  _isR = true;
+                });
+              },
+            )
           ],
           body: Stack(
             children: [
@@ -76,9 +85,7 @@ class _WelcomeRouteState extends State<WelcomeRoute>
                 opacity: _opacityContent,
                 child: (_isR)
                     ? RouteTwo()
-                    : RouteOne(
-                        notifyLoadingStatus: _notifyLoadingStatus,
-                      ),
+                    : RouteOne(notifyLoadingStatus: _notifyLoadingStatus),
               ),
             ],
           ),
