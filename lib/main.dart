@@ -38,17 +38,10 @@ class _MyAppState extends State<MyApp> {
         home: RouteThree(),
         theme: ThemeData(
           brightness: Brightness.light,
-          backgroundColor: Color.fromARGB(1, 33, 88, 88),
+          backgroundColor: Color.fromARGB(1, 33, 188, 88),
           primaryColor: Colors.yellow,
           accentColor: Colors.blueAccent,
         ),
-
-        /*
-        routes: {
-          QuestionAndAnswerRoute.routeName: (context) => QuestionAndAnswerRoute.fromContext(context),
-          AnswerReviewRoute.routeName: (context) => AnswerReviewRoute.fromContext(context),
-        },
-         */
       ),
     );
   }

@@ -16,19 +16,13 @@ class _RouteThreeState extends State<RouteThree> {
 
     return FullPageScaffold(
       child: FutureBuilder(
-        future: Future.delayed(Duration(milliseconds: 1234), () {
+        future: Future.delayed(Duration(milliseconds: 2234), () {
+          print('step on the gas');
           Provider.of<LoaderModel>(context, listen: false).stopLoading();
         }),
         builder: (context, snapshot) {
           print('step on the breaks');
-
-          /*
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text('oh hai marc'),
-          ));
-           */
-          // widget.notifyLoadingStatus(false);
-          return Text('oh hai marc');
+          return Text('Route Three');
         },
       )
     );
